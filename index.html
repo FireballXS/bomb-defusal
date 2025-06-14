@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bomb Defusal Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: lime;
+      text-align: center;
+      padding-top: 50px;
+    }
+    input, button {
+      font-size: 1.5em;
+      margin: 10px;
+    }
+    #timer {
+      font-size: 3em;
+      margin-top: 20px;
+    }
+    #activationCodeDisplay {
+      font-size: 1.5em;
+      color: yellow;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>BOMB SIMULATOR</h1>
+
+  <div id="activationCodeDisplay">Activation Code: <span id="displayedCode"></span></div>
+
+  <div id="setup">
+    <p>Enter the activation code:</p>
+    <input type="text" id="activationInput" maxlength="5">
+    <button onclick="activateBomb()">Activate Bomb</button>
+  </div>
+
+  <div id="defuseSection" style="display:none;">
+    <p>Enter code to defuse:</p>
+    <input type="text" id="defuseInput" maxlength="5">
+    <button onclick="defuseBomb()">Defuse</button>
+  </div>
+
+  <div id="timer">⏱ 60</div>
+  <div id="message"></div>
+
+  <!-- Sounds -->
+  <audio id="plantSound" src="https://www.myinstants.com/media/sounds/bomb-has-been-planted.mp3"></audio>
+  <audio id="tickSound" src="https://www.soundjay.com/clock/sounds/clock-ticking-1.mp3" loop></audio>
+  <audio id="explodeSound" src="https://www.myinstants.com/media/sounds/explosion.mp3"></audio>
+
+  <script>
+    let code = Math.floor(10000 + Math.random() * 90000).toString();
+    let countdown = 60;
+    let timerInterval;
+    let tickingSound = document.getElementById("tickSound");
+
+    document.getElementById("displayedCode").innerText = code; // Show activation code
+
+    function activateBomb() {
+      const input = document.getElementById("activationInput").value;
+      if (input === code) {
+        document.getElementById("setup").style.display = "none";
+        document.getElementById("defuseSection").style.display = "block";
+        document.getElementById("message").innerText = "The bomb has been planted!";
+        document.getElementById("plantSound").play();
+        tickingSound.play();
+        startCountdown();
+      } else {
+        alert("Incorrect activation code.");
+      }
+    }
+
+    function startCountdown() {
+      timerInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("timer").innerText = `⏱ ${countdown}`;
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          tickingSound.pause();
+          document.getElementById("explodeSound").play();
+          document.getElementById("message").innerText = "💥 BOOM!";
+        }
+      }, 1000);
+    }
+
+    function defuseBomb() {
+      const input = document.getElementById("defuseInput").value;
+      if (input === code) {
+        clearInterval(timerInterval);
+        tickingSound.pause();
+        document.getElementById("message").innerText = "✅ Bomb defused!";
+      } else {
+        alert("Wrong code! Try again.");
+      }
+    }
+  </script>
+</body>
+</html>
